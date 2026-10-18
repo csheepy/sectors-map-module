@@ -269,6 +269,9 @@ export function createMarkerJournalEntries(mapData, isGm = false) {
     return {
       name: markerName,
       pages: markerPages,
+      ownership: {
+        default: CONST.DOCUMENT_OWNERSHIP_LEVELS.LIMITED
+      },
       flags: { 'sectors-map-module': { entityId: marker.id, entityType: marker.entityType, type: 'marker-journal' } },
     };
   });
@@ -363,6 +366,9 @@ export function createSystemJournalEntries(mapData, isGm = false) {
     return {
       name: systemName,
       pages: [...systemPages, ...systemEntityPages, ...planetPages],
+      ownership: {
+        default: CONST.DOCUMENT_OWNERSHIP_LEVELS.LIMITED
+      },
       flags: { 'sectors-map-module': { systemId: system.id, type: 'system-journal' } },
     };
   });
