@@ -1,7 +1,7 @@
 import { buildPlanetDisplayData } from './importer.js';
 
 export function getHexCenterFromCoords(x, y) {
-    return canvas.grid.getCenterPoint({ i: y, j: x });
+    return canvas.grid.getCenterPoint({ i: y+1, j: x-1 });
 }
 
 export function getHexCenterFromSystem(system, options = {}) {
