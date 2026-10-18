@@ -1,0 +1,11 @@
+.sectors-map-module {
+  color: #edf2ff;
+}
+
+.sectors-map-module .gm-only {
+  display: none;
+}
+
+.sectors-map-module[data-gm='true'] .gm-only {
+  display: block;
+}

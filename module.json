@@ -1,0 +1,24 @@
+{
+  "id": "sectors-map-module",
+  "title": "Sectors Map Module",
+  "description": "Imports Sectors Without Number JSON and renders a playable star-map scene with GM-only planet details.",
+  "version": "0.1.0",
+  "authors": [
+    {
+      "name": "AI Assistant"
+    }
+  ],
+  "esmodules": [
+    "scripts/module.js"
+  ],
+  "styles": [
+    "styles/module.css"
+  ],
+  "languages": [],
+  "url": "https://example.com/sectors-map-module",
+  "manifest": "https://example.com/sectors-map-module/module.json",
+  "download": "https://example.com/sectors-map-module/archive/v0.1.0.zip",
+  "minimumCoreVersion": "12",
+  "compatibleCoreVersion": "12",
+  "license": "MIT"
+}
