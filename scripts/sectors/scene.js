@@ -149,6 +149,24 @@ function getSystemEntities(system, mapData) {
   return attached;
 }
 
+function getMarkerEntities(marker, mapData) {
+  const attached = [];
+  const rawEntries = mapData?.raw ?? {};
+
+  for (const [entityType, entries] of Object.entries(rawEntries)) {
+    if (!entries || typeof entries !== 'object' || ['sector', 'system', 'planet'].includes(entityType)) continue;
+
+    for (const entry of Object.values(entries)) {
+      if (!entry || typeof entry !== 'object') continue;
+      if (String(entry.parent ?? '') === String(marker?.id ?? '')) {
+        attached.push({ ...entry, entityType });
+      }
+    }
+  }
+
+  return attached;
+}
+
 function getPlanetEntities(planet, mapData) {
   const attached = [];
   const rawEntries = mapData?.raw ?? {};
@@ -221,23 +239,36 @@ function getSystemTags(system, mapData) {
 export function createMarkerJournalEntries(mapData, isGm = false) {
   return (mapData?.markers ?? []).map((marker) => {
     const markerName = marker.name ?? humanizeEntityType(marker.entityType ?? 'Marker');
+    const attachedEntities = getMarkerEntities(marker, mapData);
+    const attachedSummary = attachedEntities.length
+      ? `<h3>Attached Facilities</h3><ul>${attachedEntities.map((entity) => `<li>${entity.name || humanizeEntityType(entity.entityType || 'Facility')}</li>`).join('')}</ul>`
+      : '<p>No stations or facilities are directly attached to this marker.</p>';
+
     const markerSummary = `
       <h2>${markerName}</h2>
       <p><strong>Type:</strong> ${humanizeEntityType(marker.entityType ?? 'Marker')}</p>
       <p><strong>Location:</strong> ${marker.x ?? 0}, ${marker.y ?? 0}</p>
       <p><strong>Parent:</strong> ${marker.parent ?? 'Sector'}</p>
       <p><strong>Parent Entity:</strong> ${humanizeEntityType(marker.parentEntity ?? 'sector')}</p>
+      ${attachedSummary}
       ${renderTagList(Array.isArray(marker.attributes?.tags) ? marker.attributes.tags : [], isGm)}
     `;
 
+    const markerPages = [{
+      name: `${markerName} Overview`,
+      type: 'text',
+      text: buildJournalPageText(markerSummary),
+      flags: { 'sectors-map-module': { entityId: marker.id, entityType: marker.entityType, type: 'marker-journal-page' } },
+    }, ...attachedEntities.map((entity) => ({
+      name: `${markerName} - ${entity.name || humanizeEntityType(entity.entityType)}`,
+      type: 'text',
+      text: buildJournalPageText(renderEntitySummary(entity, isGm)),
+      flags: { 'sectors-map-module': { entityId: marker.id, entityType: marker.entityType, attachedEntityType: entity.entityType, attachedEntityId: entity.id, type: 'marker-entity-journal-page' } },
+    }))];
+
     return {
       name: markerName,
-      pages: [{
-        name: `${markerName} Overview`,
-        type: 'text',
-        text: buildJournalPageText(markerSummary),
-        flags: { 'sectors-map-module': { entityId: marker.id, entityType: marker.entityType, type: 'marker-journal-page' } },
-      }],
+      pages: markerPages,
       flags: { 'sectors-map-module': { entityId: marker.id, entityType: marker.entityType, type: 'marker-journal' } },
     };
   });

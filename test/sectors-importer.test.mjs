@@ -157,3 +157,18 @@ test('sector markers like black holes create notes and journals', () => {
   assert.ok(blackHoleJournals.every((journal) => journal.pages.length > 0), 'Black hole journals should include content pages');
 });
 
+test('black hole marker journals include attached stations and facilities', () => {
+  const map = normalizeSectorsImport(sample);
+  const blackHole = map.markers.find((marker) => marker.entityType === 'blackHole' && marker.name === 'KJN403');
+
+  assert.ok(blackHole, 'Expected the KJN403 black hole marker to be present in the sample data');
+
+  const journals = createMarkerJournalEntries(map, true);
+  const journal = journals.find((entry) => entry.flags['sectors-map-module'].entityId === blackHole.id);
+
+  assert.ok(journal, 'Expected a journal entry for the KJN403 black hole marker');
+  const html = String(journal.pages[0].text.content);
+  assert.ok(html.includes('South 8'), 'Black hole journals should include the stations attached beneath the marker');
+  assert.ok(html.includes('deep space station') || html.includes('deepSpaceStation') || html.includes('Deep Space Station'), 'Attached station names should be grouped with their entity type in the page');
+});
+
