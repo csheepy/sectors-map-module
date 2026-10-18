@@ -1,7 +1,9 @@
 import { buildPlanetDisplayData } from './importer.js';
 
 export function getHexCenterFromCoords(x, y) {
-    return canvas.grid.getCenterPoint({ i: y+1, j: x-1 });
+    x = x + 5 // offset to get it to around the center of the scene
+    y = y + 4 // 1 less than the offset for x because the hexes are staggered, so we need to adjust for that
+    return canvas.grid.getCenterPoint({ i: y+1, j: x });
 }
 
 export function getHexCenterFromSystem(system, options = {}) {
